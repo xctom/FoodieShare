@@ -1,0 +1,137 @@
+<style>
+  .restaurant-img{
+    border: 4px solid lightgrey;
+    border-radius: 4px;
+  }
+  .yelp-logo{
+    height: 30px;
+    margin-bottom: 6px;
+  }
+  .rating-img{
+    height: 25px;
+  }
+
+  .post-pic{
+    height: 64px;
+    width: 64px;
+  }
+
+  .post-heading{
+    color: darkgray;
+  }
+</style>
+
+<div class="container">
+  <div class="row">
+    <div class="page-header">
+      <h4>
+        <%= @business.name %>
+        <% @business.categories.each do |category| %>
+          <span class="label label-primary">
+            <%= category[0] %>
+          </span>
+          &nbsp;
+        <% end %>
+      </h4>
+    </div>
+
+    <div class="media">
+      <div class="media-left">
+        <a href=<%= @business.url %>>
+          <%= image_tag @business.image_url, class: "media-object restaurant-img" %>
+        </a>
+      </div>
+      <div class="media-body">
+        <div class="row">
+
+          <div class="col-md-12">
+            <%= image_tag @business.rating_img_url_large, class: "rating-img" %>
+            <a href="<%= @business.url%>">
+              <%= image_tag "http://s3-media2.fl.yelpcdn.com/assets/srv0/yelp_styleguide/a28962acdb61/assets/img/structural/biz_header_logo.png", :class => "yelp-logo" %>
+            </a>
+          </div>
+
+          <div class="col-md-12">
+            <address>
+              <% @business.location.display_address.each do |part| %>
+                <%= part %><br>
+              <% end %>
+              <span class="glyphicon glyphicon-earphone" aria-hidden="true"></span>
+              <%= @business.phone %>
+            </address>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr/>
+  <div class="row">
+    <!-- foodie posts-->
+    <div class="col-sm-6">
+      <small><%= @posts.count %> foodie posts</small>
+
+      <% if @posts %>
+        <% @posts.each do |post| %>
+          <% restaurant = post.restaurant %>
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <div class="media">
+                <div class="media-left">
+                  <a href="<%= user_url(post.user.id) %>">
+                    <%= image_tag post.user.profile_pic_path, :class => "media-object post-pic img-rounded" %>
+                  </a>
+                </div>
+                <div class="media-body">
+                  <h7 class="media-heading post-heading">
+                    <%= post.user.nick_name %> sent a post on:<%= post.post_time %>
+                  </h7>
+                  <div class="">
+                    <!-- rating-->
+                    <% post.rating.times do %>
+                      &#9733;
+                    <% end %>
+
+                    <% (5 - post.rating).times do %>
+                      &#9734;
+                    <% end %>
+
+                  </div>
+                  <%= post.post_text %>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+
+    </div>
+
+    <!-- yelp review-->
+    <div class="col-sm-6">
+      <small><%= @business.review_count %> yelp reviews</small>
+
+      <% @business.reviews.each do |review| %>
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="media">
+              <div class="media-left">
+                <%= image_tag review.user.image_url, :class => "media-object post-pic img-rounded" %>
+              </div>
+              <div class="media-body">
+                <h7 class="media-heading post-heading">
+                  <%= review.user.name %> reviewed on:<%= Time.at(review.time_created).to_datetime.strftime("%F %T") %>
+                </h7>
+                <div>
+                  <%= image_tag review.rating_image_url %>
+                </div>
+                <%= review.excerpt  %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
+    </div>
+  </div>
+</div>

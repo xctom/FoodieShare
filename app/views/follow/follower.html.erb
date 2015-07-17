@@ -1,0 +1,151 @@
+<style>
+  .media-pic{
+    height: 100px;
+  }
+
+  .follow-pic{
+    height: 80px;
+    width: 80px;
+  }
+
+  .post-heading{
+    color: darkgray;
+  }
+
+  .reply-pic{
+    height: 30px;
+  }
+
+  .restaurant-name{
+    text-align: left;
+    font-weight: bold;
+  }
+
+  .img-thumbnail{
+    width: 100%;
+  }
+
+  .profile-pic{
+    height: 150px;
+    width: 150px;
+    border: 5px solid rgba(255,255,255,0.5);
+  }
+
+  .user-header{
+    padding-top: 20px;
+    background-image: url(<%= image_path('user-header-back.jpg') %>);
+  }
+
+  .username{
+    font-size: 30px;
+    font-weight: bold;
+  }
+
+  .list-group-item > a {
+    color: #555;
+  }
+
+  .active > a {
+    color: white;
+  }
+
+  .tag-div{
+    padding: 8px;
+    margin: 15px 0px;
+    font-size: 13px;
+    color: inherit;
+    background-color: #fff;
+    border: 2px solid #e7e9ec;
+    border-radius: 6px;
+  }
+
+</style>
+
+<div class="container">
+
+  <div class="row">
+    <div class="panel panel-default">
+      <div class="panel-body user-header">
+        <div class="col-md-offset-5 col-md-2">
+          <%= image_tag @user.profile_pic_path, :class => "img-circle profile-pic" %>
+          <p class="text-center username"><%= @user.nick_name %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+
+    <!-- tags-->
+    <div class="col-md-4">
+      <div class="list-group">
+        <li class="list-group-item">
+          <%= link_to "Home", user_url(@user.id)%>
+        </li>
+
+        <li class="list-group-item active">
+          <span class="badge"><%= @user.followeeships.count %></span>
+          <%= link_to "Follower", follower_index_url(@user.id) %>
+        </li>
+        <li class="list-group-item">
+          <span class="badge"><%= @user.followships.count %></span>
+          <%= link_to "Follow", followee_index_url(@user.id) %>
+        </li>
+
+        <% if session[:user_id] != @user.id %>
+          <% if @follow.nil? %>
+            <li class="list-group-item">
+              <%= link_to "Follow this user", new_follow_url(@user.id),:method => "patch" %>
+            </li>
+          <% else %>
+            <li class="list-group-item">
+              <%= link_to "Unfollow", new_follow_url(@user.id),:method => "delete" %>
+            </li>
+          <% end %>
+        <% end %>
+
+        <% if session[:user_id] == @user.id %>
+          <li class="list-group-item">
+            <%= link_to "Edit", edit_user_url(@user.id)%>
+          </li>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- followers-->
+    <div class="col-md-8">
+
+      <% @follow_users.each do |user| %>
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="media">
+              <div class="media-left media-middle">
+                <a href=<%= user_url(user.id) %>>
+                  <%= image_tag user.profile_pic_path, :class => "media-object follow-pic img-rounded" %>
+                </a>
+              </div>
+              <div class="media-body">
+                <h5 class="media-heading">
+                  <%= link_to user.nick_name, user_url(user.id) %>
+                </h5>
+
+                <div>
+                  <%= user.posts.count %> Posts
+                </div>
+
+                <div>
+                  <% user.tags.each do |tag| %>
+                    <span class="label label-primary"><%= tag.tag_name %></span>
+                  <% end %>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+  </div>
+
+</div>

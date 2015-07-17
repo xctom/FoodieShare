@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Final</title>
+  <%= stylesheet_link_tag "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" %>
+  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+
+  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+  <%= csrf_meta_tags %>
+</head>
+
+<style>
+  body{
+    background-color: #F9F9F9;
+  }
+</style>
+
+<body>
+	<!-- header starts -->
+	<nav class="navbar navbar-default navbar-fixed-top">
+	  <div class="container-fluid">
+	    <!-- Brand and toggle get grouped for better mobile display -->
+	    <div class="navbar-header">
+	      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+	        <span class="sr-only">Toggle navigation</span>
+	        <span class="icon-bar"></span>
+	        <span class="icon-bar"></span>
+	        <span class="icon-bar"></span>
+	      </button>
+	      <a class="navbar-brand" href=<%= root_url %>>Foodie Share</a>
+	    </div>
+
+	    <!-- Collect the nav links, forms, and other content for toggling -->
+	    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+	      <ul class="nav navbar-nav">
+	        <li class="<%= @page_id == "posts" ? "active" : "inactive" %>">
+	        	<a href=<%= posts_url %>>
+              Posts
+              <% if @page_id == "posts" %>
+                <span class="sr-only">(current)</span>
+              <% end %>
+            </a>
+	        </li>
+	        <li class="<%= @page_id == "restaurants" ? "active" : "inactive" %>">
+	        	<a href=<%= restaurants_url %>>
+              Restaurants
+              <% if @page_id == "restaurants" %>
+                <span class="sr-only">(current)</span>
+              <% end %>
+            </a>
+	        </li>
+	      </ul>
+
+        <% if session["user_id"].present? %>
+          <form action="/users" class="navbar-form navbar-left" role="search">
+            <div class="form-group">
+              <%= text_field_tag :keyword, @keyword, class: "form-control flat", placeholder: "Search Users" %>
+            </div>
+            <button type="submit" class="btn btn-default">Search</button>
+          </form>
+        <% end %>
+
+	      <ul class="nav navbar-nav navbar-right">
+          <% if session["user_id"].present? %>
+            <li><%= link_to "Hi," + User.find_by(id: session["user_id"]).nick_name, user_url(session[:user_id]) %></li>
+            <li><%= link_to "Sign Out", '/logout' %></li>
+          <% else %>
+            <li><%= link_to "Sign In", '/login' %></li>
+            <li><%= link_to "Sign Up", '/signup' %></li>
+          <% end %>
+	      </ul>
+	    </div><!-- /.navbar-collapse -->
+	  </div><!-- /.container-fluid -->
+	</nav>
+	<!-- header ends -->
+
+	<!-- body starts -->
+	<div class="placeholder" style="height: 60px"></div>
+
+  <!-- notice-->
+  <% if notice.present? %>
+    <div class="container">
+      <div class="row">
+        <div class="alert alert-danger" role="alert">
+          <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+          <span class="sr-only">Error:</span>
+          <%= notice %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+	<%= yield %>
+
+	<!-- body ends -->
+
+
+	<!-- footer starts -->
+  <div class="footer">
+  </div>
+	<!-- footer ends -->
+
+</body>
+</html>

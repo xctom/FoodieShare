@@ -1,0 +1,253 @@
+<style>
+  .media-pic{
+    height: 100px;
+    width: 100px;
+  }
+
+  .post-pic{
+    height: 64px;
+    width: 64px;
+  }
+
+  .post-heading{
+    color: darkgray;
+  }
+
+  .reply-pic{
+    height: 30px;
+  }
+
+  .reply-footer{
+    font-size: 15px;
+    color: darkgray;
+  }
+
+  .restaurant-name{
+    text-align: left;
+    font-weight: bold;
+  }
+
+  .img-thumbnail{
+    width: 100%;
+  }
+
+  .restaurant-img{
+    border: 4px solid lightgrey;
+    border-radius: 4px;
+  }
+
+  .restaurant-address{
+    font-size: 11px;
+  }
+
+  .restaurant-snippet{
+    font-size: 12px;
+    color: gray;
+  }
+
+  .yelp-logo{
+    height: 20px;
+    margin-bottom: 6px;
+  }
+
+  #restaurants-container{
+    margin-top: 20px;
+  }
+</style>
+
+<div class="container">
+
+  <!-- If user logged in show inputbox-->
+  <% if @user %>
+    <%= form_tag "/posts", :class => "form-horizontal" do %>
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="panel panel-default">
+            <div class="panel-body">
+
+              <div class="form-group row">
+                <div class="media col-md-12">
+                  <div class="media-left media-middle">
+                    <a href="<%= user_url(@user.id) %>">
+                      <%= image_tag @user.profile_pic_path, :class => "media-object media-pic img-rounded" %>
+                    </a>
+                  </div>
+                  <div class="media-body">
+                    <%= label_tag 'post_text', "Share your comment about a restaurant", :class => "media-heading"%>
+                    <%= text_area_tag 'post_text', nil, :rows => 3, :class => "form-control", :placeholder => "Your content goes here" %>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group row">
+                <div class="col-md-2">
+                  <label for="restaurant_id">Choose a restaurant: </label>
+                </div>
+                <div class="col-md-4">
+                  <select name="restaurant_id" class="form-control input-sm">
+                    <% @restaurants.each do |restaurant| %>
+                      <option value="<%= restaurant.id %>">
+                        <%= restaurant.name %>
+                      </option>
+                    <% end %>
+                  </select>
+                </div>
+                <div class="col-md-1">
+                  <label for="rating">Rating: </label>
+                </div>
+                <div class="col-md-4">
+                  <select name="rating" class="form-control input-sm">
+                    <option value=5>5</option>
+                    <option value=4>4</option>
+                    <option value=3>3</option>
+                    <option value=2>2</option>
+                    <option value=1>1</option>
+                  </select>
+                </div>
+                <div class="col-md-1">
+                  <button class="btn btn-primary" type="submit">Share</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+
+  <div class="row">
+
+    <!-- Posts and replies-->
+    <div class="col-md-8">
+      <% if @posts %>
+        <% @posts.each do |post| %>
+          <% restaurant = post.restaurant %>
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <div class="media">
+                <div class="media-left">
+                  <a href=<%= user_url(post.user.id) %>>
+                    <%= image_tag post.user.profile_pic_path, :class => "media-object post-pic img-rounded" %>
+                  </a>
+                </div>
+                <div class="media-body">
+                  <h7 class="media-heading post-heading">
+                    <%= post.user.nick_name %> sent a post on:<%= post.post_time %>
+                    <% if @user && @user.id == post.user_id  %>
+                      (<%= link_to "Delete", "/posts/#{post.id}", :method => 'delete' %>)
+                    <% end %>
+                  </h7>
+                  <div class="">
+                    <!-- restaurant name-->
+                    <%= link_to restaurant.name, restaurant_url(restaurant.id) %>
+
+                    <!-- rating-->
+                    <% post.rating.times do %>
+                      &#9733;
+                    <% end %>
+
+                    <% (5 - post.rating).times do %>
+                      &#9734;
+                    <% end %>
+
+                  </div>
+                  <%= post.post_text %>
+                </div>
+              </div>
+            </div>
+
+            <% if @user %>
+              <div class="panel-footer">
+                <a data-toggle="collapse" href="#collapse-<%= post.id %>" aria-expanded="false" aria-controls="#collapse-<%= post.id %>">
+                  Comments(<%= post.replies.count%>)
+                </a>
+
+                <!-- reply list-->
+                <ul class="media-list collapse" id = "collapse-<%= post.id %>">
+
+                  <% post.replies.each do |reply| %>
+                    <li class="media">
+                      <div class="media-left">
+                        <a href="<%= user_url(reply.user.id) %>">
+                          <%= image_tag reply.user.profile_pic_path, :class => "media-object reply-pic img-rounded" %>
+                        </a>
+                      </div>
+                      <div class="media-body">
+
+                        <!-- reply content-->
+                        <%= link_to "@#{reply.user.nick_name}:", user_url(reply.user.id) %><%= reply.content %>
+
+                        <!-- reply footer-->
+                        <div class="media-heading reply-footer">
+                          Replied on: <%= reply.time %>
+                          <% if @user && @user.id == reply.user_id  %>
+                            (<%= link_to "Delete", "/replies/#{reply.id}", :method => 'delete' %>)
+                          <% end %>
+                        </div>
+
+                      </div>
+                    </li>
+                  <% end %>
+                </ul>
+
+                <!-- replie area-->
+                <%= form_tag "/replies" do %>
+                  <div class="row">
+                    <div class="form-group col-sm-9">
+                      <%= text_area_tag 'content', nil, :rows => 1, :class => "form-control", :placeholder => "Say something about this post" %>
+                    </div>
+                    <div class="form-group col-sm-2">
+                      <button class="btn btn-primary" type="submit">Send</button>
+                    </div>
+                  </div>
+                  <%= text_field_tag "post_id", post.id, :type => "hidden" %>
+                <% end %>
+              </div>
+            <% end %>
+
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+
+    <!-- restaurants-->
+    <div class="col-md-4">
+
+      <h5>Recommend Restaurants</h5>
+
+      <div id="restaurants-container">
+        <% @restaurants.shuffle.first(20).each do |restaurant| %>
+
+          <div class="media well">
+            <div class="media-left">
+              <a href="<%= restaurant_url(restaurant.id) %>">
+                <%= image_tag restaurant.image_url, :class => "media-object restaurant-img" %>
+              </a>
+            </div>
+            <div class="media-body">
+
+              <h4 class="media-heading">
+                <%= link_to restaurant.name, restaurant_url(restaurant.id)%>
+              </h4>
+
+              <%= image_tag restaurant.rating_img_url %>
+              <%= image_tag "http://s3-media2.fl.yelpcdn.com/assets/srv0/yelp_styleguide/a28962acdb61/assets/img/structural/biz_header_logo.png", :class => "yelp-logo" %>
+
+              <% if restaurant.snippet_text.present? %>
+                <div class="restaurant-snippet">
+                  <%= restaurant.snippet_text %>
+                </div>
+              <% end %>
+
+              <div class="restaurant-address">
+                <em><%= restaurant.location_display_address %></em>
+              </div>
+            </div>
+          </div>
+
+        <% end %>
+      </div>
+
+    </div>
+  </div>
+</div>

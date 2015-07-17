@@ -1,0 +1,162 @@
+<style>
+  .media-pic{
+    height: 100px;
+  }
+
+  .follow-pic{
+    height: 80px;
+    width: 80px;
+  }
+
+  .post-heading{
+    color: darkgray;
+  }
+
+  .reply-pic{
+    height: 30px;
+  }
+
+  .restaurant-name{
+    text-align: left;
+    font-weight: bold;
+  }
+
+  .img-thumbnail{
+    width: 100%;
+  }
+
+  .profile-pic{
+    height: 150px;
+    width: 150px;
+    border: 5px solid rgba(255,255,255,0.5);
+  }
+
+  .user-header{
+    padding-top: 20px;
+    background-image: url(<%= image_path('user-header-back.jpg') %>);
+  }
+
+  .username{
+    font-size: 30px;
+    font-weight: bold;
+  }
+
+  .list-group-item > a {
+    color: #555;
+  }
+
+  .active > a {
+    color: white;
+  }
+
+  .tag-div{
+    padding: 8px;
+    margin: 15px 0px;
+    font-size: 13px;
+    color: inherit;
+    background-color: #fff;
+    border: 2px solid #e7e9ec;
+    border-radius: 6px;
+  }
+
+</style>
+
+<div class="container">
+
+  <div class="row">
+    <div class="panel panel-default">
+      <div class="panel-body user-header">
+        <div class="col-md-offset-5 col-md-2">
+          <%= image_tag @user.profile_pic_path, :class => "img-circle profile-pic" %>
+          <p class="text-center username"><%= @user.nick_name %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- tags-->
+    <div class="col-md-4">
+      <div class="list-group">
+        <li class="list-group-item">
+          <%= link_to "Home", user_url(@user.id)%>
+        </li>
+
+        <li class="list-group-item">
+          <span class="badge"><%= @user.followeeships.count %></span>
+          <%= link_to "Follower", follower_index_url(@user.id) %>
+        </li>
+        <li class="list-group-item">
+          <span class="badge"><%= @user.followships.count %></span>
+          <%= link_to "Follow", followee_index_url(@user.id) %>
+        </li>
+
+        <% if session[:user_id] != @user.id %>
+          <% if @follow.nil? %>
+            <li class="list-group-item">
+              <%= link_to "Follow this user", new_follow_url(@user.id),:method => "patch" %>
+            </li>
+          <% else %>
+            <li class="list-group-item">
+              <%= link_to "Unfollow", new_follow_url(@user.id),:method => "delete" %>
+            </li>
+          <% end %>
+        <% end %>
+        <% if session[:user_id] == @user.id %>
+          <li class="list-group-item active">
+            <%= link_to "Edit", edit_user_url(@user.id)%>
+          </li>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="col-md-8">
+      <%= form_tag user_url(@user.id), :method => "patch" do %>
+        <div class="form-group">
+          <div class="input-group input-group-lg">
+            <%= label_tag 'user_name', "Username", :class => "input-group-addon" %>
+            <%= text_field_tag 'user_name', @user.user_name, placeholder: 'Example: user_name@email.com', :class => "form-control" %>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="input-group input-group-lg">
+            <%= label_tag 'profile_pic_path', "profile_pic_path", :class => "input-group-addon" %>
+            <%= text_field_tag 'profile_pic_path', @user.profile_pic_path, :class => "form-control" %>
+          </div>
+        </div>
+        
+        <div class="form-group nick_name">
+          <div class="input-group input-group-lg">
+            <%= label_tag 'nick_name', "Nick Name", :class => "input-group-addon" %>
+            <%= text_field_tag 'nick_name', @user.nick_name, :class => "form-control" %>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="input-group input-group-lg">
+            <%= label_tag 'password', "Password", :class => "input-group-addon" %>
+            <%= password_field_tag 'password',  nil, placeholder: 'Example: password',:class => "form-control"%>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="input-group input-group-lg">
+            <%= label_tag 'new_password', "New Password", :class => "input-group-addon" %>
+            <%= password_field_tag 'new_password',  nil, placeholder: 'Example: password',:class => "form-control"%>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="input-group input-group-lg">
+            <%= label_tag 'repassword', "Confirm Password",  :class => "input-group-addon" %>
+            <%= password_field_tag 'repassword',  nil, placeholder: 'Example: password', :class => "form-control"%>
+          </div>
+        </div>
+        
+        <%= submit_tag "Update(You must enter your password to update)", class: 'btn btn-primary btn-lg btn-block submit-button' %>
+      <% end %>
+    </div>
+  </div>
+
+</div>

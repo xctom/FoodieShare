@@ -1,0 +1,166 @@
+<style type="text/css">
+  #map_canvas {
+    height: 100%
+  }
+  .map-div{
+    height: 40em;
+  }
+
+  .restaurants-address{
+    text-align: left;
+    font-size: 12px;
+  }
+
+  .side-map{
+    height: 100%;
+    width: inherit;
+  }
+  
+  .img-thumbnail{
+    height: 100%;
+    width: 100%;
+  }
+
+  .highlight{
+    padding: 4px 10px;
+    margin: 2px 0px;
+    background-color: #f7f7f9;
+    border: 1px solid #e1e1e8;
+    border-radius: 4px;
+    color: gray;
+  }
+
+  .restaurant-img{
+    border: 4px solid lightgrey;
+    border-radius: 4px;
+  }
+
+</style>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-8">
+      <!-- restaurant list-->
+      <div class="row">
+
+        <%= paginate @restaurants %>
+
+        <ul class="media-list">
+          <% @restaurants.each do |restaurant| %>
+            <li class="media well">
+              <div class="media-left">
+                <a href="<%= restaurant_url(restaurant.id) %>">
+                  <%= image_tag restaurant.image_url, :class => "media-object restaurant-img" %>
+                </a>
+              </div>
+              <div class="media-body">
+                <h4 class="media-heading">
+                  <%= link_to restaurant.name, restaurant_url(restaurant.id) %>
+                </h4>
+                <%= image_tag restaurant.rating_img_url %>
+
+                <% if restaurant.snippet_text.present? %>
+                  <div class="highlight">
+                    <%= restaurant.snippet_text %>
+                  </div>
+                <% end %>
+
+                <div class = "restaurant-address">
+                  <em><%= restaurant.location_display_address %></em>
+                </div>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix side-map">
+        <div id="map_canvas" style="width:100%; height:100%"></div>
+      </nav>
+    </div>
+  </div>
+
+</div>
+
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyApNBc6Vy0Ayi38rhGcxm6T8fkh_VoNh9Y&sensor=SET_TO_TRUE_OR_FALSE"></script>
+
+<script type="text/javascript">
+
+  var map;
+  var service;
+
+  function textSearchCallBack(results, status){
+    if (status == google.maps.places.PlacesServiceStatus.OK) {
+      for (var i = 0; i < results.length; i++) {
+        var place = results[i];
+        createMarkerAndInfoWindow(place.geometry.location,place.name);
+      }
+    }
+  }
+
+  //create marker on the Google Map
+  function createMarkerAndInfoWindow(location,title){
+    var marker = new google.maps.Marker({
+      map: map,
+      position: location,
+      title: title
+    });
+
+    var contentString = title;
+
+    var infowindow = new google.maps.InfoWindow({
+      content: contentString
+    });
+
+    google.maps.event.addListener(marker, 'click', function() {
+      infowindow.open(map,marker);
+    });
+  }
+
+  function initialize() {
+
+    var mapOptions = {
+      zoom: 10
+    };
+
+    map = new google.maps.Map(document.getElementById('map_canvas'),
+            mapOptions);
+    service = new google.maps.places.PlacesService(map);
+
+	  // Try HTML5 geolocation
+	  if(navigator.geolocation) {
+	    navigator.geolocation.getCurrentPosition(function(position) {
+        //current user position
+	      var pos = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+
+        //create marker and info window for user position
+	      createMarkerAndInfoWindow(pos,"You are here");
+
+	      map.setCenter(pos);
+
+        <% @restaurants.each do |restaurant| %>
+
+          var request = {
+            query: '<%= restaurant.location_display_address %>'
+          };
+
+          service.textSearch(request, textSearchCallBack);
+        <% end %>
+
+	    }, function() {
+	      handleNoGeolocation(true);
+	    });
+
+	  } else {
+	    // Browser doesn't support Geolocation
+	    handleNoGeolocation(false);
+	  }
+	}
+
+  $(document).ready(function(){
+  	initialize();
+  });
+
+</script>

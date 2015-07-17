@@ -1,0 +1,55 @@
+<style>
+  .profile-pic{
+    height: 100px;
+    width: 100px;
+  }
+</style>
+
+
+<div class="container">
+
+  <div class="row">
+    <div class="page-header">
+      <h3>
+        Result for "<%= @keyword %>"
+        <small style="color: gray;  "><%= @users.count == 0 ? "No" : @users.count %>
+          User Found
+        </small>
+      </h3>
+    </div>
+  </div>
+
+  <div class="row">
+    <% @users.each do |user| %>
+      <div class="col-md-6">
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="media">
+              <div class="media-left media-middle">
+                <a href=<%= user_url(user.id) %>>
+                  <%= image_tag user.profile_pic_path, :class => "media-object profile-pic img-rounded" %>
+                </a>
+              </div>
+              <div class="media-body">
+                <h5 class="media-heading">
+                  <%= link_to user.nick_name, user_url(user.id) %>
+                </h5>
+
+                <div>
+                  <%= user.posts.count %> Posts
+                </div>
+
+                <div>
+                  <% user.tags.each do |tag| %>
+                    <span class="label label-primary"><%= tag.tag_name %></span>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+</div>

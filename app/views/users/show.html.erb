@@ -1,0 +1,233 @@
+<style>
+  .media-pic{
+    height: 100px;
+  }
+
+  .post-pic{
+    height: 64px;
+    width: 64px;
+  }
+
+  .post-heading{
+    color: darkgray;
+  }
+
+  .reply-pic{
+    height: 30px;
+  }
+
+  .reply-footer{
+    font-size: 15px;
+    color: darkgray;
+  }
+
+  .restaurant-name{
+    text-align: left;
+    font-weight: bold;
+  }
+
+  .img-thumbnail{
+    width: 100%;
+  }
+
+  .profile-pic{
+    height: 150px;
+    width: 150px;
+    border: 5px solid rgba(255,255,255,0.5);
+  }
+
+  .user-header{
+    padding-top: 20px;
+    background-image: url(<%= image_path('user-header-back.jpg') %>);
+  }
+
+  .username{
+    font-size: 30px;
+    font-weight: bold;
+  }
+
+  .list-group-item > a {
+    color: #555;
+  }
+
+  .active > a {
+    color: white;
+  }
+
+  .tag-div{
+    padding: 8px;
+    margin: 15px 0px;
+    font-size: 13px;
+    color: inherit;
+    background-color: #fff;
+    border: 2px solid #e7e9ec;
+    border-radius: 6px;
+  }
+
+</style>
+
+<div class="container">
+
+  <div class="row">
+    <div class="panel panel-default">
+      <div class="panel-body user-header">
+        <div class="col-md-offset-5 col-md-2">
+          <%= image_tag @user.profile_pic_path, :class => "img-circle profile-pic" %>
+          <p class="text-center username"><%= @user.nick_name %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+
+    <!-- tags-->
+    <div class="col-md-4">
+      <div class="list-group">
+        <li class="list-group-item active">
+          <%= link_to "Home", "#"%>
+        </li>
+        
+        <li class="list-group-item">
+          <span class="badge"><%= @user.followeeships.count %></span>
+          <%= link_to "Follower", follower_index_url(@user.id) %>
+        </li>
+        <li class="list-group-item">
+          <span class="badge"><%= @user.followships.count %></span>
+          <%= link_to "Follow", followee_index_url(@user.id) %>
+        </li>
+
+        <% if session[:user_id] != @user.id %>
+          <% if @follow.nil? %>
+          <li class="list-group-item">
+            <%= link_to "Follow this user", new_follow_url(@user.id),:method => "patch" %>
+          </li>
+          <% else %>
+          <li class="list-group-item">
+            <%= link_to "Unfollow", new_follow_url(@user.id),:method => "delete" %>
+          </li>
+          <% end %>
+        <% end %>
+        <% if session[:user_id] == @user.id %>
+          <li class="list-group-item">
+            <%= link_to "Edit", edit_user_url(@user.id)%>
+          </li>
+        <% end %>
+      </div>
+
+      <!-- tags area-->
+      <!-- if user logged in, show edit tag-->
+      <!-- if not, show tags-->
+      <% if session[:user_id] == @user.id %>
+        <%= form_tag "/tags" , :method => "patch" do %>
+          Tags:<button type="submit" class="btn btn-sm btn-info" style="margin-left:5px;">Update Tags</button>
+          <div style="margin-top: 10px;">
+            <select name="tags[]" multiple="multiple" class="form-control multiselect multiselect-info">
+              <% @tags.each do |tag| %>
+                <% if @user_tags.include? tag.tag_name %>
+                  <option value="<%= tag.id %>"  selected><%= tag.tag_name %></option>
+                <% else %>
+                  <option value="<%= tag.id %>"><%= tag.tag_name %></option>
+                <% end %>
+              <% end %>
+            </select>
+          </div>
+        <% end %>
+      <% else %>
+        Tags:
+        <div class="col-md-12 tag-div">
+          <% if @user.tags.count > 0 %>
+            <% @user.tags.each do |tag| %>
+              <button class="btn btn-info tag-item"><%= tag.tag_name %></button>
+            <% end %>
+          <% else %>
+            No tags yet
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Posts and replies-->
+    <div class="col-md-8">
+      <% if @user.posts %>
+        <% @user.posts.each do |post| %>
+          <% restaurant = post.restaurant %>
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <div class="media">
+                <div class="media-left">
+                  <a href="<%= user_url(post.user.id) %>">
+                    <%= image_tag post.user.profile_pic_path, :class => "media-object post-pic img-rounded" %>
+                  </a>
+                </div>
+                <div class="media-body">
+                  <h6 class="media-heading post-heading">
+                    <%= @user.nick_name %> sent a post on:<%= post.post_time %>
+                    <% if @user && @user.id == post.user_id  %>
+                      (<%= link_to "Delete", "/posts/#{post.id}", :method => 'delete' %>)
+                    <% end %>
+                  </h6>
+                  <h5 class="">
+                    <!-- restaurant name-->
+                    <%= link_to restaurant.name, restaurant_url(restaurant.id) %>
+
+                    <!-- rating-->
+                    <% post.rating.times do %>
+                      &#9733;
+                    <% end %>
+
+                    <% (5 - post.rating).times do %>
+                      &#9734;
+                    <% end %>
+
+                  </h5>
+                  <%= post.post_text %>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel-footer">
+              <a data-toggle="collapse" href="#collapse-<%= post.id %>" aria-expanded="false" aria-controls="#collapse-<%= post.id %>">
+                Comments(<%= post.replies.count%>)
+              </a>
+
+              <!-- reply list-->
+              <ul class="media-list collapse" id = "collapse-<%= post.id %>">
+
+                <% post.replies.each do |reply| %>
+                  <li class="media">
+                    <div class="media-left">
+                      <a href="<%= user_url(reply.user.id) %>">
+                        <%= image_tag reply.user.profile_pic_path, :class => "media-object reply-pic img-rounded" %>
+                      </a>
+                    </div>
+                    <div class="media-body">
+                      <%= link_to "@#{reply.user.nick_name}:", user_url(reply.user.id) %><%= reply.content %>
+                      <h6 class="media-heading reply-footer">
+                        Replied on: <%= reply.time %>
+
+                        <% if @user && @user.id == reply.user_id  %>
+                          (<%= link_to "Delete", "/replies/#{reply.id}", :method => 'delete' %>)
+                        <% end %>
+
+                      </h6>
+                    </div>
+                  </li>
+                <% end %>
+              </ul>
+
+
+
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  $("select").select2({dropdownCssClass: 'dropdown-inverse'});
+</script>

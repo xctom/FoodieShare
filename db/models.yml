@@ -1,0 +1,54 @@
+User
+  user_name: string
+  password_digest: string
+  profile_pic_path: string
+  gender: int
+  id_created_time: datetime
+  nick_name: string
+  place: string
+  last_login_time: datetime
+
+Tag
+  tag_name: string
+
+Post
+  user_id: integer
+  post_time: datetime
+  post_text: text
+  latitude: string
+  longitude: string
+  rating: integer
+
+Restaurant
+  yelp_id: string
+  name: string
+  image_url: string
+  url: string
+  phone: string
+  rating_img_url: string
+  rating: float
+  location_display_address: string
+  snippet_text: string
+
+Place
+  post_id: integer
+  restaurant_id: integer
+
+Picture
+  post_id: integer
+  img_path: string
+
+Mark
+  user_id: integer
+  tag_id: integer
+
+Reply
+  user_id: integer
+  post_id: integer
+  content: text
+  time: datetime
+
+Follow
+  user_id: integer
+  follower_id: integer
+

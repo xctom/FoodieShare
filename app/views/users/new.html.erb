@@ -1,0 +1,90 @@
+<style>
+.signup-form-title {
+    text-align: center;
+    font-weight: bold;
+    margin-top: 0px;
+  }
+  .login-form{
+    margin-top: 50px;
+    background-color: rgba(2555,255,255,0.4);
+  }
+  body{
+    background-image: url(<%= image_path('signup_bg.jpg') %>);
+    background-size:cover;
+  }
+  .nick_name{
+    margin-top: 15px;
+  }
+  .alert{
+    margin-bottom: -18px;
+  }
+</style>
+<div class="container">
+
+  <% if @user.errors.any? %>
+    <div class="row">
+      <div class="alert alert-danger" role="alert">
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+        <span class="sr-only">Error:</span>
+        <% @user.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="row">
+
+    <div class="col-lg-6 col-lg-offset-0 col-md-6 col-md-offset-0 login-form">
+
+      <%= form_tag "/users" do %>
+
+        <h2 class="signup-form-title">Sign Up</h2>
+
+        <div class="form-group">
+          <div class="input-group input-group-lg">
+            <%= label_tag 'user_name', "Username", :class => "input-group-addon" %>
+            <%= text_field_tag 'user_name', @user.user_name, placeholder: 'Example: user_name@email.com', :class => "form-control" %>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="input-group input-group-lg">
+            <%= label_tag 'password', "Password", :class => "input-group-addon" %>
+            <%= password_field_tag 'password', nil, placeholder: 'Example: password',:class => "form-control"%>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="input-group input-group-lg">
+            <%= label_tag 'repassword', "Confirm Password",  :class => "input-group-addon" %>
+            <%= password_field_tag 'repassword', nil, placeholder: 'Example: password', :class => "form-control"%>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="input-group input-group-lg">
+            <%= label_tag 'profile_pic_path', "profile_pic_path", :class => "input-group-addon" %>
+            <%= text_field_tag 'profile_pic_path', nil, :class => "form-control" %>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="input-group input-group-lg">
+            <%= label_tag 'gender', "Gender", :class => "input-group-addon" %>
+            <select name="gender" class="form-control">
+            <option value="1">Male</option>
+            <option value="2">Female</option>
+  
+            </select>
+            
+        </div>
+          <div class="form-group nick_name">
+            <div class="input-group input-group-lg">
+              <%= label_tag 'nick_name', "Nick Name", :class => "input-group-addon" %>
+              <%= text_field_tag 'nick_name', @user.nick_name, :class => "form-control" %>
+            </div>
+          </div>
+          <%= submit_tag "Sign Up", class: 'btn btn-primary btn-lg btn-block submit-button' %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

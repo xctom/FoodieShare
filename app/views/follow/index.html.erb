@@ -1,0 +1,15 @@
+<% @follow_users.each do |user| %>
+    <tr>
+      <td><%= link_to user.user_name, user_url(user.id) %></td>
+      <td><%= user.password %></td>
+      <td><%= user.profile_pic_path %></td>
+      <td><%= user.id_created_time %></td>
+      <td><%= user.nick_name %></td>
+      <td><%= user.gender %></td>
+      <td><%= user.place %></td>
+      <td><%= user.last_login_time %></td>
+      <td><%= link_to "Edit...", "/users/#{user.id}/edit" %></td>
+
+      <td><%= link_to "Delete", "/users/#{user.id}", :method => 'delete' %></td>
+    </tr>
+<% end %>
