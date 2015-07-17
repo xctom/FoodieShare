@@ -1,5 +1,24 @@
 # FoodieShare
 - This is a yelp-based social web application where users can share comments for a restaurant, follow each other and look for good restaurants in Chicago
+- Login Page
+
+<img src="https://github.com/xctom/FoodieShare/blob/master/screenshots/index.png" width="700"/>
+
+- Post a review
+
+<img src="https://github.com/xctom/FoodieShare/blob/master/screenshots/reviews.png" width="700"/>
+
+- Restaurant List
+
+<img src="https://github.com/xctom/FoodieShare/blob/master/screenshots/restaurants.png" width="700"/>
+
+- Restaurant Detail
+
+<img src="https://github.com/xctom/FoodieShare/blob/master/screenshots/restaurant.png" width="700"/> 
+
+- User Home Page
+
+<img src="https://github.com/xctom/FoodieShare/blob/master/screenshots/userHome.png" width="700"/>
 
 # Setup
 ### Install HomeBrew
