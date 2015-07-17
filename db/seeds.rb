@@ -16,11 +16,12 @@ Follow.delete_all
 Restaurant.delete_all
 Place.delete_all
 
+#put your yelp parameters here
 Yelp.client.configure do |config|
-  config.consumer_key = "qOxoGstzEM4ERC_BQxIltw"
-  config.consumer_secret = "Tk1TpsaLK5aaSLTFgEfSDWhOkMQ"
-  config.token = "Hdr0_0BjpxnItY1LtfNl-MrNEzIZbXvX"
-  config.token_secret = "AXuqW-YSbjWrLmtgSDdJStG2_G0"
+  config.consumer_key = ""
+  config.consumer_secret = ""
+  config.token = ""
+  config.token_secret = ""
 end
 
 categories = JSON.parse(open('db/categories.json').read)
